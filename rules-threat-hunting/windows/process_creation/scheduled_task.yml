@@ -1,0 +1,28 @@
+title: Suspicious Scheduled Task Creation
+id: 8d2aac54-027c-4668-b885-0a163e3c8245
+status: experimental
+description: Detects the creation of scheduled tasks by a non-SYSTEM user, which may indicate persistence by a threat actor.
+author: Mehrnaz Nejati
+date: 2026/03/18
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection:
+    Image|endswith: '\schtasks.exe'
+    CommandLine|contains: '/Create'
+  filter:
+    User|contains: 'SYSTEM'
+  condition: selection and not filter
+fields:
+  - Image
+  - CommandLine
+  - User
+  - ParentImage
+falsepositives:
+  - Legitimate administrative scheduled task creation
+level: medium
+tags:
+  - attack.execution
+  - attack.persistence
+  - attack.t1053.005
